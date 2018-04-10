@@ -3,6 +3,7 @@ pragma solidity ^0.4.17;
 contract DocumentWriter {
     address owner;
     mapping(string => Document) documents;
+    mapping(string => string[]) authorDocuments;
 
     struct Document {
         string fileHash;
@@ -32,6 +33,8 @@ contract DocumentWriter {
        newDocument.isValue = true;
 
        documents[fileHash] = newDocument;
+
+       authorDocuments[author].push(fileHash);
     }
 
     function getDocument(string fileHash) view public returns (bool,string,string,string) {
@@ -42,7 +45,11 @@ contract DocumentWriter {
 
     function documentExists(string fileHash) view public returns(bool) {
         return documents[fileHash].isValue;
-    } 
-
-
+    }
+    //returns amount of documents / title / email
+    function getAuthorDocuments(string author,uint256 index) view public returns(uint256,string,string) {
+        string[] documents = authorDocuments[author];
+        // Document memory doc = documents[documents[author][index]];
+        return (documents.length,"","");
+    }
 }

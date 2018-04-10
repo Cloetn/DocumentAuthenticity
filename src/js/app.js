@@ -4,8 +4,9 @@ App = {
     init: function(){
         $("#frmDocument").on("submit",App.uploadDocumentSubmitted);
         $("#frmCheckDocument").on("submit",App.checkDocumentSubmitted);
+        $("#frmSearchByAuthor").on("submit",App.searchByAuthor);
         $("#document-overview").hide();
-
+        
         App.initWeb3();
     },
     initWeb3: function() {
@@ -82,6 +83,18 @@ App = {
             toastr.warning('Please upload a document.');       
         }    
       },
+      searchByAuthor: function(e){
+        e.preventDefault();
+
+        var author = $("#txtSearchByAuthor").val();
+
+        console.log(author);
+
+        App.getDocumentByAuthor(author,0,function(result){
+            console.log(result);
+            console.log(parseInt(result[0]));
+        });
+      },
       generateHashFromFile: function(file,callback){
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -119,6 +132,21 @@ App = {
             if (accounts.length > 0){
                 App.contracts.DocumentWriter.deployed().then(function(instance){
                    return instance.getDocument(fileHash); 
+                }).then(function(result){
+                    callback(result);
+                }).catch(function (error){
+                    console.log(error)
+                });
+            }else{
+                toastr.warning("Please activate an Ethereum wallet.");
+            }
+        });
+      },
+      getDocumentByAuthor: function(author,index,callback){
+        web3.eth.getAccounts(function(error,accounts){
+            if (accounts.length > 0){
+                App.contracts.DocumentWriter.deployed().then(function(instance){
+                   return instance.getAuthorDocuments(author,index); 
                 }).then(function(result){
                     callback(result);
                 }).catch(function (error){
