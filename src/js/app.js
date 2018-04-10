@@ -4,7 +4,8 @@ App = {
     init: function(){
         $("#frmDocument").on("submit",App.uploadDocumentSubmitted);
         $("#frmCheckDocument").on("submit",App.checkDocumentSubmitted);
-        
+        $("#document-overview").hide();
+
         App.initWeb3();
     },
     initWeb3: function() {
@@ -64,7 +65,18 @@ App = {
             var file = documentInput.files[0];
 
             App.generateHashFromFile(file,function(fileHash){
-                console.log(fileHash);
+                App.getDocument(fileHash,function(result){
+                    console.log(result);
+                    if (result[0]){
+                        toastr.success("Document was found.");
+                        $("#document-overview").show();
+                        $("#document-title").text(result[1]);
+                        $("#document-author").text(result[2]);
+                        $("#document-email").text(result[3]);
+                    }else{
+                        toastr.warning("Document does not exist on the blockchain yet.");
+                    }
+                });
             });
         }else{                
             toastr.warning('Please upload a document.');       
@@ -101,6 +113,21 @@ App = {
         $("#txtTitle").val("");
         $("#txtAuthor").val("");
         $("#txtEmail").val("");
+      },
+      getDocument: function(fileHash,callback){
+        web3.eth.getAccounts(function(error,accounts){
+            if (accounts.length > 0){
+                App.contracts.DocumentWriter.deployed().then(function(instance){
+                   return instance.getDocument(fileHash); 
+                }).then(function(result){
+                    callback(result);
+                }).catch(function (error){
+                    console.log(error)
+                });
+            }else{
+                toastr.warning("Please activate an Ethereum wallet.");
+            }
+        });
       },
       insertDocument: function(fileHash,title, author,email){
 
