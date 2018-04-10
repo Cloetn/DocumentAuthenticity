@@ -1,0 +1,57 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <link href="css\bootstrap.min.css" rel="stylesheet" />
+        <link href="css\toastr.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 offset-md-3 mt-5">
+                    <h2>Check if document exists.</h1>
+                    <form id="frmCheckDocument">                        
+                        <div class="form-group">   
+                            <label for="documentInput">Your document</label>
+                            <input type="file" class="form-control-file" id="documentToCheckInput">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Check</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 offset-md-3 mt-5">
+                    <h2>Upload new document</h1>
+                    <form id="frmDocument">
+                            <div class="form-group">
+                                <label for="txtTitle">Title</label>
+                                <input type="text" class="form-control" id="txtTitle" placeholder="Document Title">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtAuthor">Author</label>
+                                <input type="text" class="form-control" id="txtAuthor" placeholder="Author name">
+                            </div>
+                            <div class="form-group">                                    
+                                <label for="txtEmail">Email address</label>
+                                <input type="email" class="form-control" id="txtEmail" placeholder="Enter email">
+                            </div>    
+                            <div class="form-group">   
+                                <label for="documentInput">Your document</label>
+                                <input type="file" class="form-control-file" id="documentInput">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>    
+                </div>
+            </div>  
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+   
+    <script src="js\bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.min.js"></script>
+    <script src="js/toastr.min.js"></script>
+    
+    <script src="js\app.js"></script>
+</html>
