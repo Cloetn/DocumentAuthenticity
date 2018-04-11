@@ -24,8 +24,11 @@
                     <div class="card" style="width: 18rem;">
                             <div class="card-body">
                                 <h5 class="card-title" id="document-title"></h5>
-                                <h6 class="card-subtitle mb-2 text-muted" id="document-author"></h6>
-                                <a href="#" class="card-link" id="document-email"></a>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <span id="document-author"></span> - 
+                                    <a href="#" class="card-link" id="document-email"></a>
+                                </h6>                                
+                                <i id="document-createdon"></i>
                             </div>
                     </div>
                 </div>
@@ -61,18 +64,25 @@
                         
 
                         <div class="form-group">
-                            <label for="txtSearchByAuthor">Author</label>
+                            <label for="txtSearchByAuthor">Author (Case sensitive)</label>
                             <input type="text" class="form-control" id="txtSearchByAuthor" placeholder="Search by Author">
                         </div>
                         <button id="btnSearch" type="submit" class="btn btn-primary">Search</button>
                     </form>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6 offset-md-3 mb-5 mt-1">
+                    <ul id="listOfDocuments" class="list-group"> 
+
+                    </ul>
+                </div>
+            </div>
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js" />
     <script src="js\bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.min.js"></script>

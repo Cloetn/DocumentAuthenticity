@@ -12,7 +12,7 @@ App = {
     initWeb3: function() {
         
         if (typeof(web3 !== undefined)){
-          App.web3Provider = web3.currentProvider;
+            App.web3Provider = web3.currentProvider;
         }else{
             toastr.warning('Please enable MetaMask');            
         }
@@ -67,13 +67,17 @@ App = {
 
             App.generateHashFromFile(file,function(fileHash){
                 App.getDocument(fileHash,function(result){
-                    console.log(result);
                     if (result[0]){
                         toastr.success("Document was found.");
                         $("#document-overview").show();
                         $("#document-title").text(result[1]);
                         $("#document-author").text(result[2]);
                         $("#document-email").text(result[3]);
+
+                       var timeStamp = parseInt(result[4]);
+                       var rootDatetime = moment.unix(timeStamp).format("DD/MM/YYYY HH:mm:ss");
+
+                       $("#document-createdon").text(rootDatetime);
                     }else{
                         toastr.warning("Document does not exist on the blockchain yet.");
                     }
@@ -87,13 +91,34 @@ App = {
         e.preventDefault();
 
         var author = $("#txtSearchByAuthor").val();
-
-        console.log(author);
+        $("#listOfDocuments").empty();
 
         App.getDocumentByAuthor(author,0,function(result){
-            console.log(result);
-            console.log(parseInt(result[0]));
+            var total = parseInt(result[0]);
+
+            if (total > 1){              
+                App.makeListElement(author,result);
+                for (i = 1; i < total;i++){
+                    App.getDocumentByAuthor(author,i,function(result){
+                        App.makeListElement(author,result);
+                    });
+                }
+            }else{
+                toastr.warning("No documents for author " + author + " found.");
+            }
+            
         });
+      },
+      makeListElement: function(author,blockchainItem){
+        //Not gonna add some fancy JS framework for some list rendering, gonna do it old skool.        
+        var timeStamp = parseInt(blockchainItem[3]);
+        var rootDatetime = moment.unix(timeStamp).format("DD/MM/YYYY HH:mm:ss");
+
+        var documentElement = $("<li class='list-group-item'></li>");
+        $(documentElement).html(blockchainItem[1] + ' by ' + author + ' - <a href="mailto:"' + blockchainItem[2] + '">' + blockchainItem[2] + '</a>');
+        $(documentElement).append('<br /><i>Published on ' + rootDatetime + ' </i>');
+
+        $("#listOfDocuments").append(documentElement);
       },
       generateHashFromFile: function(file,callback){
         var reader = new FileReader();
@@ -166,7 +191,7 @@ App = {
                 App.contracts.DocumentWriter.deployed().then(function(instance) {
                   documentWriterInstance = instance;
                     //If call doesn't work or you dun goofed with the contracts ==> delete build folder & run rthe following command:  truffle migrate --reset --compile-all
-                  return documentWriterInstance.uploadDocument(fileHash,title,author,email,0,{from:accounts[0]});
+                  return documentWriterInstance.uploadDocument(fileHash,title,author,email,{from:accounts[0]});
                 }).then(function(result) {
                     if (result){
                         toastr.success('Document is saved on the blockchain.');

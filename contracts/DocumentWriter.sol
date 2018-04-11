@@ -10,7 +10,7 @@ contract DocumentWriter {
         string title;
         string author;
         string email;
-        uint256 createdOn;
+        uint createdOn;
         bool isValue;
     }
 
@@ -23,13 +23,13 @@ contract DocumentWriter {
         owner = msg.sender;
     }
 
-    function uploadDocument(string fileHash,string title, string author,string email, uint256 createdOn) public documentMustNotExist(fileHash) {  
+    function uploadDocument(string fileHash,string title, string author,string email) public documentMustNotExist(fileHash) {  
        Document memory newDocument;
        newDocument.fileHash = fileHash;
        newDocument.title = title;
        newDocument.author = author;
        newDocument.email = email;
-       newDocument.createdOn = createdOn;
+       newDocument.createdOn = block.timestamp;
        newDocument.isValue = true;
 
        documents[fileHash] = newDocument;
@@ -37,19 +37,23 @@ contract DocumentWriter {
        authorDocuments[author].push(fileHash);
     }
 
-    function getDocument(string fileHash) view public returns (bool,string,string,string) {
+    function getDocument(string fileHash) view public returns (bool,string,string,string,uint) {
         Document memory doc = documents[fileHash];
 
-        return (doc.isValue,doc.title,doc.author,doc.email);
+        return (doc.isValue,doc.title,doc.author,doc.email,doc.createdOn);
     }
 
     function documentExists(string fileHash) view public returns(bool) {
         return documents[fileHash].isValue;
     }
     //returns amount of documents / title / email
-    function getAuthorDocuments(string author,uint256 index) view public returns(uint256,string,string) {
-        string[] documents = authorDocuments[author];
-        // Document memory doc = documents[documents[author][index]];
-        return (documents.length,"","");
+    function getAuthorDocuments(string author,uint256 index) view public returns(uint256,string,string,uint) {
+        string[] documentsForAuthor = authorDocuments[author];
+        if (documentsForAuthor.length == 0) {
+            return (0,"","",0);
+        } else {
+            Document memory doc = documents[documentsForAuthor[index]];
+            return (documentsForAuthor.length,doc.title,doc.email,doc.createdOn);
+        }
     }
 }
