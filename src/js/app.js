@@ -96,7 +96,7 @@ App = {
         App.getDocumentByAuthor(author,0,function(result){
             var total = parseInt(result[0]);
 
-            if (total > 1){              
+            if (total > 0){              
                 App.makeListElement(author,result);
                 for (i = 1; i < total;i++){
                     App.getDocumentByAuthor(author,i,function(result){
