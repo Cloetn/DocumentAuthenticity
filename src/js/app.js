@@ -87,6 +87,11 @@ App = {
         var author = web3.fromAscii($("#txtAuthor").val());
         var email = web3.fromAscii($("#txtEmail").val());
 
+        if (title == "0x" || author == "0x"){
+            toastr.warning("Make sure the document has a title and an author");
+            return;
+        }
+
         //Grab the file
         var documentInput = document.getElementById("documentInput");
         if (documentInput.files.length > 0){
@@ -272,7 +277,7 @@ App = {
                 var contract = App.contractToAddToTheManager[i];
                 var byteContractName = web3.fromAscii(contract.name);
                 App.addContractToCMC(byteContractName,contract.address,function(result){
-                    toastr.success("Put the " + contract.name + " into the CMC");
+                    toastr.success("Put the contract into the CMC");
                 });
             }
         },
