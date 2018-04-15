@@ -27,10 +27,18 @@ contract('CMC', function(accounts) {
                 crdbInstance = instance;
             });
         }).then(function(){
-            return cmcInstance.addContract(web3.fromAscii("CRManager"),CRManager.address);
+            return cmcInstance.addContract(web3.fromAscii("CRManager"),crManagerInstance.address);
         }).then(function(){
             return cmcInstance.addContract(web3.fromAscii("CRDB"),crdbInstance.address);
-        });
+        }).then(function(){
+            return cmcInstance.contracts.call(web3.fromAscii("CRDB")).then(function(result){
+                assert.equal(result,crdbInstance.address);
+            });
+        }).then(function(){
+            return cmcInstance.contracts.call(web3.fromAscii("CRManager")).then(function(result){
+                assert.equal(result,crManagerInstance.address);
+            });
+        })
     });
 
     it("Should up upload document and check if it exists",function(){
