@@ -37,6 +37,8 @@ App = {
                     name: "CRManager",
                     address: instance.address
                 });
+
+                App.checkIfCMCIsDeployed("CRManager");
             });
 		});
 		  
@@ -61,8 +63,22 @@ App = {
                     name: "CRDB",
                     address: instance.address
                 });
+
+                App.checkIfCMCIsDeployed("CRDB");
             });
           });    
+
+      },
+      checkIfCMCIsDeployed: function(name){
+            var byteContractName = web3.fromAscii(name);
+
+            App.contracts.CMC.deployed().then(function(instance){
+                instance.contracts.call(name).then(function(result){
+                    if (result == 0x0000000000000000000000000000000000000000){
+                        toastr.error("Contract " + name+ " is not deployed. Please deploy the CMC.");
+                    }
+                });
+            });
       },
       uploadDocumentSubmitted: function(e){
         e.preventDefault();
@@ -77,19 +93,12 @@ App = {
             
             var file = documentInput.files[0];
             App.generateHashFromFile(file,function(fileHash){
-                console.log(fileHash);
                 App.checkIfDocumentExists(fileHash, function(result){
                     if (result){
                         toastr.warning('This document already exists on the blockchain.');                
                     }else{
                         
                         var fileHashBytes = web3.fromAscii(fileHash);
-
-                        console.log(fileHashBytes);
-                        console.log(title);
-                        console.log(author);
-                        console.log(email);
-
                         App.insertDocument(fileHashBytes,title,author,email);
                     }
                     return false;
@@ -169,10 +178,6 @@ App = {
         var reader = new FileReader();
         reader.onload = function(e) {
             var arrayBuffer = reader.result;
-            // var hash = CryptoJS.MD5(CryptoJS.enc.Latin1.parse(e.result));
-            // var md5 = hash.toString(CryptoJS.enc.Hex);
-
-            // callback(md5);
 
             crypto.subtle.digest("SHA-256", arrayBuffer).then(function(result){  
                 const hashArray = Array.from(new Uint8Array(result));
@@ -180,6 +185,9 @@ App = {
                 //https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
                 fileHash = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
                 
+                //Due to the fact that  we need to use bytes32 on solidity we can't put in the full hash.
+                //We know it's not secure to just take the half but couldn't find a solution to save
+                //the whole hash on the blockchain
                 callback(fileHash.substring(0,fileHash.length/2));
             });
         }
@@ -191,10 +199,11 @@ App = {
         
         App.contracts.CRManager.deployed().then(function(instance) {
           CRManagerInstance = instance;
-            //If call doesn't work or you dun goofed with the contracts ==> delete build folder & run rthe following command:  truffle migrate --reset --compile-all
+            //If call doesn't work or you dun goofed with the contracts ==> delete build folder & 
+            //run rthe following command:  truffle migrate --reset --compile-all
           return CRManagerInstance.documentExists(web3.fromAscii(fileHash));
         }).then(callback).catch(function(err) {
-          console.log(err.message);
+            toastr.error("Error checking if document exists. Did you deploy the CMC?");
         });
       },
       clearForm: function(){
@@ -210,7 +219,7 @@ App = {
                 }).then(function(result){
                     callback(result);
                 }).catch(function (error){
-                    console.log(error)
+                    toastr.error("Error checking if document exists. Did you deploy the CMC?");
                 });
             }else{
                 toastr.warning("Please activate an Ethereum wallet.");
@@ -225,7 +234,7 @@ App = {
                 }).then(function(result){
                     callback(result);
                 }).catch(function (error){
-                    console.log(error)
+                    toastr.error("Error checking if document exists. Did you deploy the CMC?");
                 });
             }else{
                 toastr.warning("Please activate an Ethereum wallet.");
@@ -249,7 +258,7 @@ App = {
                         App.clearForm();
                     }
                 }).catch(function(err) {
-                    console.log(err.message);
+                    toastr.error("Error checking if document exists. Did you deploy the CMC?");
                 });
             }else{
                 //show warning to users                
@@ -263,7 +272,7 @@ App = {
                 var contract = App.contractToAddToTheManager[i];
                 var byteContractName = web3.fromAscii(contract.name);
                 App.addContractToCMC(byteContractName,contract.address,function(result){
-                    console.log(result);
+                    toastr.success("Put the " + contract.name + " into the CMC");
                 });
             }
         },
@@ -276,7 +285,7 @@ App = {
                     }).then(function(result){
                         callback(result);
                     }).catch(function (error){
-                        console.log(error)
+                        toastr.error("Error checking if document exists. Did you deploy the CMC?");
                     });
                 }else{
                     toastr.warning("Please activate an Ethereum wallet.");
